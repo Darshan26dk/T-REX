@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>T-REX</title>
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', () => {
+			const alert = document.getElementById('alert')
+			const grid = document.querySelector('.grid')
+			const dino = document.querySelector('.dino')
+			const body = document.querySelector('body')
+			const score = document.getElementById('score')
+			let jumping = false
+			let gravity = 0.9
+			let gameover = false
+
+			function control(e){
+				if(e.keyCode === 32){
+					if(!jumping){
+                        jumping = true
+                        jump()
+					}
+				}
+			}
+
+			document.addEventListener('keyup',control)
+
+			let position = 0
+			function jump(){
+				let count = 0
+				let uptime = setInterval(function(){
+					if(count === 15){
+						clearInterval(uptime)
+						let downtime = setInterval(function(){
+                             if(count === 0){
+                             	clearInterval(downtime)
+                             	jumping = false
+                             }
+                             position -= 5
+                             count --
+                             position *= gravity
+                             dino.style.bottom = position + 'px'
+						},20)
+					}
+					position += 30
+					count ++
+					position *= gravity
+					dino.style.bottom = position + 'px'
+				},20)
+			}
+
+			function getobstacle(){
+				let timeline = Math.random() * 3000
+				let total = Math.floor(Math.random() * 1000)
+				let obstacleposition = 2000
+				const obstacle = document.createElement('div')
+				if(!gameover) obstacle.classList.add('obstacle')
+				grid.appendChild(obstacle)
+			    obstacle.style.left = obstacleposition + 'px'
+
+			    let uptime = setInterval(function(){
+			    	if(obstacleposition>0 && obstacleposition<60 && position<60){
+			    		clearInterval(uptime)
+			    		alert.innerHTML = "GAME OVER !"
+                        score.innerHTML = "Score: " + total
+			    		gameover = true
+			    		body.removeChild(body.firstChild)
+			    		while(grid.firstChild){
+			    			grid.removeChild(grid.lastChild)
+			    		}
+			    	}
+			    	obstacleposition -= 12
+			    	obstacle.style.left = obstacleposition + 'px'
+			    },20)
+			    if(!gameover) setTimeout(getobstacle,timeline)
+			}
+		  getobstacle()
+		})
+	</script>
+	<style>
+		.dino{
+			position: absolute;
+			bottom: 0px;
+			width: 60px;
+			height: 60px;
+			background-image: url('https://raw.githubusercontent.com/kubowania/chrome-trex-game/master/t-rex.png');
+		}
+		.obstacle{
+			position: absolute;
+			bottom: 0px;
+			width: 60px;
+			height: 60px;
+			background-image: url('https://raw.githubusercontent.com/kubowania/chrome-trex-game/master/cacti.png');
+		}
+		@keyframes slideright{
+			from{
+				background-position: 70000%;
+			}
+			to{
+				background-position: 0%;
+			}
+		}
+		@-webkit-keyframes slideright{
+			from{
+				background-position: 70000%;
+			}
+			to{
+				background-position: 0%;
+			}
+		}
+		#path{
+			position: absolute;
+			bottom: 0px;
+			width: 100%;
+			height: 200px;
+			background-image: url('https://raw.githubusercontent.com/kubowania/chrome-trex-game/master/t-rex-background.png');
+			background-repeat: repeat-x;
+			animation: slideright 600s infinite linear;
+			-webkit-animation: slideright 600s infinite linear;
+		}
+	</style>
+</head>
+<body>
+	<div id="path">
+		<h2 id="alert"></h2>
+		<h2 id="score"></h2>
+		<div class="grid">
+			<div class="dino"></div>
+		</div>
+	</div>
+</body>
+</html>
